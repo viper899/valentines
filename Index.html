@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Prakruthi Nayaka ❤️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+  background: radial-gradient(circle at top,#ff4d79,#120010 70%);
+  color:white;
+  overflow-x:hidden;
+}
+
+/* 🎬 INTRO VIDEO CONTAINER */
+#introContainer{
+  position:fixed;
+  inset:0;
+  z-index:999;
+  transition:all 1.4s cubic-bezier(.7,.1,.2,1);
+  background:black;
+}
+
+/* 🎥 VIDEO */
+#introVideo{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
+  transition:all 1.4s ease;
+}
+
+/* 👇 Banner mode (no cropping now) */
+.bannerMode{
+  height:140px !important;
+  backdrop-filter: blur(20px);
+}
+.bannerMode #introVideo{
+  object-fit:contain;   /* FIX: prevents top cropping */
+  background:black;
+}
+
+/* 🌌 PARALLAX BACKGROUND */
+.parallax{
+  position:fixed;
+  inset:0;
+  background-image: radial-gradient(rgba(255,255,255,0.25) 1px, transparent 1px);
+  background-size:40px 40px;
+  animation:moveBg 20s linear infinite;
+  opacity:.2;
+}
+@keyframes moveBg{
+  from{background-position:0 0;}
+  to{background-position:200px 200px;}
+}
+
+/* 💌 MAIN CONTENT */
+#mainContent{
+  display:none;
+  padding-top:200px;
+  text-align:center;
+}
+
+.glass{
+  width:90%;
+  max-width:720px;
+  margin:auto;
+  padding:50px;
+  border-radius:28px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter: blur(22px);
+  box-shadow:0 25px 60px rgba(0,0,0,.5);
+}
+
+h1{
+  font-size:42px;
+  font-weight:600;
+  text-shadow:0 0 18px rgba(255,100,140,.8);
+}
+
+#typing{
+  margin-top:12px;
+  font-size:20px;
+  opacity:.9;
+}
+
+/* ❤️ BUTTONS */
+.buttons{
+  margin-top:50px;
+  position:relative;
+  height:240px;
+}
+
+button{
+  position:absolute;
+  border:none;
+  padding:16px 28px;
+  font-size:18px;
+  border-radius:50px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+#yesBtn{
+  background:white;
+  color:#ff2e6a;
+  left:28%;
+  box-shadow:0 0 20px rgba(255,100,140,.7);
+}
+
+#noBtn{
+  background:black;
+  color:white;
+  left:56%;
+}
+
+button:hover{transform:scale(1.1);}
+
+#result{
+  margin-top:35px;
+  font-size:24px;
+  font-weight:600;
+}
+
+/* 💖 PARTICLES */
+.particle{
+  position:fixed;
+  bottom:-20px;
+  animation:floatUp linear infinite;
+  opacity:.7;
+}
+@keyframes floatUp{
+  from{transform:translateY(0);}
+  to{transform:translateY(-110vh);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="parallax"></div>
+
+<!-- 🎬 INTRO VIDEO -->
+<div id="introContainer">
+  <video id="introVideo" autoplay muted>
+    <source src="intro.mp4" type="video/mp4">
+  </video>
+</div>
+
+<!-- 🎵 MUSIC (starts after YES click) -->
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 💌 MAIN SITE -->
+<div id="mainContent">
+  <div class="glass">
+    <h1 id="title"></h1>
+    <div id="typing"></div>
+
+    <div class="buttons">
+      <button id="yesBtn" onclick="yesClicked()">YES ❤️</button>
+      <button id="noBtn">NO 😜</button>
+    </div>
+
+    <div id="result"></div>
+  </div>
+</div>
+
+<script>
+const video=document.getElementById("introVideo");
+const intro=document.getElementById("introContainer");
+const main=document.getElementById("mainContent");
+const music=document.getElementById("bgMusic");
+
+/* 🎬 VIDEO → BANNER TRANSITION */
+video.onended=()=>{
+  intro.classList.add("bannerMode");
+
+  setTimeout(()=>{
+    intro.style.position="absolute";
+    main.style.display="block";
+    startTyping();
+    spawnParticles();
+  },1000);
+};
+
+/* 🎧 MUSIC FADE-IN */
+function fadeMusic(){
+  let v=0;
+  const f=setInterval(()=>{
+    v+=0.02;
+    music.volume=v;
+    if(v>=0.6) clearInterval(f);
+  },200);
+}
+
+/* ✨ TYPING EFFECT */
+const nameText="Prakruthi Nayaka...";
+const subText="Will you be my Valentine? ❤️";
+
+function startTyping(){
+  let i=0;
+  const title=document.getElementById("title");
+
+  const t1=setInterval(()=>{
+    title.innerHTML+=nameText.charAt(i);
+    i++;
+    if(i>=nameText.length){
+      clearInterval(t1);
+      typeSubtitle();
+    }
+  },90);
+}
+
+function typeSubtitle(){
+  let j=0;
+  const sub=document.getElementById("typing");
+
+  const t2=setInterval(()=>{
+    sub.innerHTML+=subText.charAt(j);
+    j++;
+    if(j>=subText.length) clearInterval(t2);
+  },60);
+}
+
+/* 😈 ESCAPING NO BUTTON */
+const noBtn=document.getElementById("noBtn");
+let difficulty=1;
+
+function moveNo(){
+  const area=document.querySelector(".buttons");
+  const maxX=area.clientWidth-noBtn.offsetWidth;
+  const maxY=area.clientHeight-noBtn.offsetHeight;
+
+  noBtn.style.left=Math.random()*maxX+"px";
+  noBtn.style.top=Math.random()*maxY+"px";
+
+  difficulty+=0.5;
+  noBtn.style.transition=(0.25/difficulty)+"s";
+}
+
+noBtn.addEventListener("mouseover",moveNo);
+noBtn.addEventListener("click",moveNo);
+
+/* ❤️ YES CLICK — MUSIC STARTS HERE */
+function yesClicked(){
+  document.getElementById("result").innerHTML=
+  "You just unlocked my forever ❤️✨";
+
+  music.volume=0;
+  music.play();
+  fadeMusic();
+}
+
+/* 💖 FLOATING PARTICLES */
+function spawnParticles(){
+  setInterval(()=>{
+    const p=document.createElement("div");
+    p.className="particle";
+    p.innerHTML=Math.random()>.5?"❤️":"✨";
+    p.style.left=Math.random()*100+"vw";
+    p.style.fontSize=(14+Math.random()*24)+"px";
+    p.style.animationDuration=(6+Math.random()*5)+"s";
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),10000);
+  },350);
+}
+</script>
+
+</body>
+</html>
